@@ -10,7 +10,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css" />
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#0F766E" />
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body class="min-h-screen flex items-center justify-center p-0 sm:p-6" style="background: radial-gradient(circle at 20% 10%, #14B8A633, transparent 40%), var(--color-bg);">
 
@@ -72,7 +75,8 @@
           <div class="absolute left-0 right-0 top-1/2 border-t border-slate-200"></div>
         </div>
 
-        <button type="button" id="googleLogin" class="w-full py-3 rounded-[var(--radius-sm)] border border-slate-200 flex items-center justify-center gap-2 font-semibold text-slate-700 hover:bg-slate-50 transition">
+        <div id="googleBtnContainer" class="flex justify-center"></div>
+        <button type="button" id="googleFallbackBtn" class="hidden w-full py-3 rounded-[var(--radius-sm)] border border-slate-200 flex items-center justify-center gap-2 font-semibold text-slate-700 hover:bg-slate-50 transition">
           <i class="fa-brands fa-google text-[#EA4335]"></i> Login dengan Google
         </button>
       </form>
@@ -81,6 +85,7 @@
     </div>
   </div>
 
+  <script src="assets/js/config.js"></script>
   <script src="assets/js/api.js"></script>
   <script src="assets/js/auth.js"></script>
   <script src="assets/js/ui.js"></script>
@@ -118,9 +123,45 @@
       }
     });
 
-    document.getElementById('googleLogin').addEventListener('click', () => {
-      UI.toast('Login Google belum dikonfigurasi. Hubungkan OAuth client di sisi backend.', 'warning');
-    });
+    // ------------------------------------------------------------------
+    // Google Identity Services - Login dengan Google
+    // ------------------------------------------------------------------
+    async function handleGoogleCredential(response) {
+      UI.loading('Memeriksa akun Google...');
+      try {
+        const result = await Api.post('googleLogin', { credential: response.credential });
+        UI.closeLoading();
+        if (result.success) {
+          Auth.saveSession(result.data);
+          window.location.href = 'dashboard.html';
+        } else {
+          UI.toast(result.message || 'Login Google gagal', 'error');
+        }
+      } catch (err) {
+        UI.closeLoading();
+        UI.toast('Tidak dapat terhubung ke server', 'error');
+      }
+    }
+
+    if (GOOGLE_CLIENT_ID.indexOf('GANTI_DENGAN') !== -1) {
+      // Client ID belum dikonfigurasi - tampilkan tombol fallback dengan pesan
+      document.getElementById('googleFallbackBtn').classList.remove('hidden');
+      document.getElementById('googleFallbackBtn').addEventListener('click', () => {
+        UI.toast('Login Google belum dikonfigurasi. Isi GOOGLE_CLIENT_ID di assets/js/config.js dan backend/Code.gs', 'warning');
+      });
+    } else {
+      window.addEventListener('load', () => {
+        google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleGoogleCredential,
+        });
+        google.accounts.id.renderButton(document.getElementById('googleBtnContainer'), {
+          theme: 'outline', size: 'large', shape: 'pill', width: 320, text: 'continue_with',
+        });
+      });
+    }
   </script>
+  <script>window.PWA_SW_PATH = 'sw.js'; window.PWA_SCOPE = './';</script>
+  <script src="assets/js/pwa.js"></script>
 </body>
 </html>
