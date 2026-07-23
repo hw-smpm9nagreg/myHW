@@ -72,55 +72,59 @@
     <div class="mt-6">
       <h2 class="font-bold text-slate-800 mb-3">Menu Utama</h2>
       <div class="grid grid-cols-4 gap-y-5 card-soft p-4">
-        <a href="pages/anggota.html" class="flex flex-col items-center gap-1.5 text-center">
+        <a href="pages/anggota.html" data-roles="admin,pembina" class="flex flex-col items-center gap-1.5 text-center">
           <div class="menu-icon bg-teal-50 text-primary"><i class="fa-solid fa-users"></i></div>
           <span class="text-[11px] font-medium text-slate-600">Anggota</span>
         </a>
-        <a href="pages/qobilah.html" class="flex flex-col items-center gap-1.5 text-center">
+        <a href="pages/qobilah.html" data-roles="admin,pembina" class="flex flex-col items-center gap-1.5 text-center">
           <div class="menu-icon bg-amber-50 text-amber-500"><i class="fa-solid fa-campground"></i></div>
           <span class="text-[11px] font-medium text-slate-600">Qobilah</span>
         </a>
-        <a href="pages/kegiatan.html" class="flex flex-col items-center gap-1.5 text-center">
+        <a href="pages/kegiatan.html" data-roles="admin,pembina,anggota" class="flex flex-col items-center gap-1.5 text-center">
           <div class="menu-icon bg-sky-50 text-sky-500"><i class="fa-solid fa-calendar-days"></i></div>
           <span class="text-[11px] font-medium text-slate-600">Kegiatan</span>
         </a>
-        <a href="pages/absensi.html" class="flex flex-col items-center gap-1.5 text-center">
+        <a href="pages/absensi.html" data-roles="admin,pembina" class="flex flex-col items-center gap-1.5 text-center">
           <div class="menu-icon bg-emerald-50 text-emerald-500"><i class="fa-solid fa-clipboard-check"></i></div>
           <span class="text-[11px] font-medium text-slate-600">Absensi</span>
         </a>
-        <a href="pages/surat.html" class="flex flex-col items-center gap-1.5 text-center">
+        <a href="pages/surat.html" data-roles="admin,pembina" class="flex flex-col items-center gap-1.5 text-center">
           <div class="menu-icon bg-indigo-50 text-indigo-500"><i class="fa-solid fa-envelope-open-text"></i></div>
           <span class="text-[11px] font-medium text-slate-600">Surat</span>
         </a>
-        <a href="pages/skt-tkt.html" class="flex flex-col items-center gap-1.5 text-center">
+        <a href="pages/skt-tkt.html" data-roles="admin,pembina,anggota" class="flex flex-col items-center gap-1.5 text-center">
           <div class="menu-icon bg-rose-50 text-rose-500"><i class="fa-solid fa-award"></i></div>
           <span class="text-[11px] font-medium text-slate-600">SKT & TKT</span>
         </a>
-        <a href="pages/prestasi.html" class="flex flex-col items-center gap-1.5 text-center">
+        <a href="pages/prestasi.html" data-roles="admin,pembina,anggota" class="flex flex-col items-center gap-1.5 text-center">
           <div class="menu-icon bg-yellow-50 text-yellow-500"><i class="fa-solid fa-trophy"></i></div>
           <span class="text-[11px] font-medium text-slate-600">Prestasi</span>
         </a>
-        <a href="pages/keuangan.html" class="flex flex-col items-center gap-1.5 text-center">
+        <a href="pages/keuangan.html" data-roles="admin,bendahara" class="flex flex-col items-center gap-1.5 text-center">
           <div class="menu-icon bg-lime-50 text-lime-600"><i class="fa-solid fa-sack-dollar"></i></div>
           <span class="text-[11px] font-medium text-slate-600">Keuangan</span>
         </a>
-        <a href="pages/inventaris.html" class="flex flex-col items-center gap-1.5 text-center">
+        <a href="pages/inventaris.html" data-roles="admin,pembina" class="flex flex-col items-center gap-1.5 text-center">
           <div class="menu-icon bg-orange-50 text-orange-500"><i class="fa-solid fa-boxes-stacked"></i></div>
           <span class="text-[11px] font-medium text-slate-600">Inventaris</span>
         </a>
-        <a href="pages/dokumen.html" class="flex flex-col items-center gap-1.5 text-center">
+        <a href="pages/dokumen.html" data-roles="admin,pembina" class="flex flex-col items-center gap-1.5 text-center">
           <div class="menu-icon bg-slate-100 text-slate-500"><i class="fa-solid fa-folder-open"></i></div>
           <span class="text-[11px] font-medium text-slate-600">Dokumen</span>
         </a>
-        <a href="pages/pengumuman.html" class="flex flex-col items-center gap-1.5 text-center">
+        <a href="pages/pengumuman.html" data-roles="admin,pembina,bendahara,anggota" class="flex flex-col items-center gap-1.5 text-center">
           <div class="menu-icon bg-red-50 text-red-500"><i class="fa-solid fa-bullhorn"></i></div>
           <span class="text-[11px] font-medium text-slate-600">Pengumuman</span>
         </a>
-        <a href="pages/laporan.html" class="flex flex-col items-center gap-1.5 text-center">
+        <a href="pages/laporan.html" data-roles="admin,pembina,bendahara" class="flex flex-col items-center gap-1.5 text-center">
           <div class="menu-icon bg-cyan-50 text-cyan-600"><i class="fa-solid fa-chart-column"></i></div>
           <span class="text-[11px] font-medium text-slate-600">Laporan</span>
         </a>
-        <a href="pages/pengaturan.html" class="flex flex-col items-center gap-1.5 text-center col-span-4 sm:col-span-1">
+        <a href="pages/pengguna.html" data-roles="admin" class="flex flex-col items-center gap-1.5 text-center">
+          <div class="menu-icon bg-purple-50 text-purple-500"><i class="fa-solid fa-user-shield"></i></div>
+          <span class="text-[11px] font-medium text-slate-600">Manajemen Pengguna</span>
+        </a>
+        <a href="pages/pengaturan.html" data-roles="admin,pembina,bendahara,anggota" class="flex flex-col items-center gap-1.5 text-center">
           <div class="menu-icon bg-teal-50 text-primary"><i class="fa-solid fa-gear"></i></div>
           <span class="text-[11px] font-medium text-slate-600">Pengaturan</span>
         </a>
