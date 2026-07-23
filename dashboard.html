@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+<title>myHW - Dashboard</title>
+<link rel="icon" href="https://lh3.googleusercontent.com/d/1csvYSWImSM_A8khBCr8K1ovcKW8wCuaw" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head>
+<body class="pb-28" style="background: var(--color-bg);">
+
+  <!-- ===== Header ===== -->
+  <header class="gradient-primary relative px-5 pt-6 pb-20" style="border-bottom-left-radius: var(--radius-lg); border-bottom-right-radius: var(--radius-lg);">
+    <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 18px 18px;"></div>
+
+    <div class="relative flex items-center justify-between mb-5">
+      <div class="flex items-center gap-2">
+        <img src="https://lh3.googleusercontent.com/d/1csvYSWImSM_A8khBCr8K1ovcKW8wCuaw" class="w-8 h-8 rounded-lg bg-white p-1 object-contain" alt="myHW" />
+        <span class="text-white font-bold">myHW</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button class="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center text-white relative">
+          <i class="fa-regular fa-bell"></i>
+          <span id="notifDot" class="hidden absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[var(--color-accent)]"></span>
+        </button>
+        <button id="btnLogout" class="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center text-white">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="relative">
+      <p class="text-teal-50/90 text-sm">Assalamu'alaikum,</p>
+      <h1 id="greetName" class="text-white text-2xl font-extrabold">Tommy</h1>
+      <p id="greetRole" class="text-teal-50/80 text-xs mt-0.5"><i class="fa-solid fa-shield-halved mr-1"></i>Pembina Qobilah</p>
+    </div>
+  </header>
+
+  <main class="px-4 -mt-14 relative">
+
+    <!-- ===== Profile card ===== -->
+    <div class="card-soft p-4 flex items-center gap-4">
+      <div class="w-16 h-16 rounded-2xl bg-teal-50 flex items-center justify-center text-2xl font-bold text-primary overflow-hidden">
+        <span id="avatarInitial">T</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p id="profileName" class="font-bold text-slate-800 truncate">Tommy</p>
+        <p class="text-xs text-slate-500 mt-0.5"><i class="fa-solid fa-id-card mr-1"></i><span id="profileNomor">-</span></p>
+        <p class="text-xs text-slate-500"><i class="fa-solid fa-tent mr-1"></i><span id="profileQobilah">-</span></p>
+      </div>
+      <span class="text-xs font-semibold text-white bg-[var(--color-success)] px-3 py-1.5 rounded-full flex items-center gap-1">
+        <span class="w-1.5 h-1.5 rounded-full bg-white"></span> Aktif
+      </span>
+    </div>
+
+    <!-- ===== Ringkasan ===== -->
+    <div class="mt-5">
+      <h2 class="font-bold text-slate-800 mb-3">Ringkasan</h2>
+      <div id="summaryCards" class="grid grid-cols-2 gap-3">
+        <!-- filled by JS -->
+      </div>
+    </div>
+
+    <!-- ===== Menu utama ===== -->
+    <div class="mt-6">
+      <h2 class="font-bold text-slate-800 mb-3">Menu Utama</h2>
+      <div class="grid grid-cols-4 gap-y-5 card-soft p-4">
+        <a href="pages/anggota.html" class="flex flex-col items-center gap-1.5 text-center">
+          <div class="menu-icon bg-teal-50 text-primary"><i class="fa-solid fa-users"></i></div>
+          <span class="text-[11px] font-medium text-slate-600">Anggota</span>
+        </a>
+        <a href="pages/qobilah.html" class="flex flex-col items-center gap-1.5 text-center">
+          <div class="menu-icon bg-amber-50 text-amber-500"><i class="fa-solid fa-campground"></i></div>
+          <span class="text-[11px] font-medium text-slate-600">Qobilah</span>
+        </a>
+        <a href="pages/kegiatan.html" class="flex flex-col items-center gap-1.5 text-center">
+          <div class="menu-icon bg-sky-50 text-sky-500"><i class="fa-solid fa-calendar-days"></i></div>
+          <span class="text-[11px] font-medium text-slate-600">Kegiatan</span>
+        </a>
+        <a href="pages/absensi.html" class="flex flex-col items-center gap-1.5 text-center">
+          <div class="menu-icon bg-emerald-50 text-emerald-500"><i class="fa-solid fa-clipboard-check"></i></div>
+          <span class="text-[11px] font-medium text-slate-600">Absensi</span>
+        </a>
+        <a href="pages/surat.html" class="flex flex-col items-center gap-1.5 text-center">
+          <div class="menu-icon bg-indigo-50 text-indigo-500"><i class="fa-solid fa-envelope-open-text"></i></div>
+          <span class="text-[11px] font-medium text-slate-600">Surat</span>
+        </a>
+        <a href="pages/sku.html" class="flex flex-col items-center gap-1.5 text-center">
+          <div class="menu-icon bg-rose-50 text-rose-500"><i class="fa-solid fa-award"></i></div>
+          <span class="text-[11px] font-medium text-slate-600">SKU & TKU</span>
+        </a>
+        <a href="pages/prestasi.html" class="flex flex-col items-center gap-1.5 text-center">
+          <div class="menu-icon bg-yellow-50 text-yellow-500"><i class="fa-solid fa-trophy"></i></div>
+          <span class="text-[11px] font-medium text-slate-600">Prestasi</span>
+        </a>
+        <a href="pages/keuangan.html" class="flex flex-col items-center gap-1.5 text-center">
+          <div class="menu-icon bg-lime-50 text-lime-600"><i class="fa-solid fa-sack-dollar"></i></div>
+          <span class="text-[11px] font-medium text-slate-600">Keuangan</span>
+        </a>
+        <a href="pages/inventaris.html" class="flex flex-col items-center gap-1.5 text-center">
+          <div class="menu-icon bg-orange-50 text-orange-500"><i class="fa-solid fa-boxes-stacked"></i></div>
+          <span class="text-[11px] font-medium text-slate-600">Inventaris</span>
+        </a>
+        <a href="pages/dokumen.html" class="flex flex-col items-center gap-1.5 text-center">
+          <div class="menu-icon bg-slate-100 text-slate-500"><i class="fa-solid fa-folder-open"></i></div>
+          <span class="text-[11px] font-medium text-slate-600">Dokumen</span>
+        </a>
+        <a href="pages/pengumuman.html" class="flex flex-col items-center gap-1.5 text-center">
+          <div class="menu-icon bg-red-50 text-red-500"><i class="fa-solid fa-bullhorn"></i></div>
+          <span class="text-[11px] font-medium text-slate-600">Pengumuman</span>
+        </a>
+        <a href="pages/laporan.html" class="flex flex-col items-center gap-1.5 text-center">
+          <div class="menu-icon bg-cyan-50 text-cyan-600"><i class="fa-solid fa-chart-column"></i></div>
+          <span class="text-[11px] font-medium text-slate-600">Laporan</span>
+        </a>
+        <a href="pages/pengaturan.html" class="flex flex-col items-center gap-1.5 text-center col-span-4 sm:col-span-1">
+          <div class="menu-icon bg-teal-50 text-primary"><i class="fa-solid fa-gear"></i></div>
+          <span class="text-[11px] font-medium text-slate-600">Pengaturan</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- ===== Kas & Statistik ===== -->
+    <div class="mt-6 card-soft p-4">
+      <h2 class="font-bold text-slate-800 mb-3">Statistik Kehadiran (6 bulan terakhir)</h2>
+      <canvas id="statsChart" height="140"></canvas>
+    </div>
+
+  </main>
+
+  <!-- ===== Bottom Navigation ===== -->
+  <nav class="bottom-nav fixed bottom-0 left-0 right-0 bg-white safe-bottom">
+    <div class="grid grid-cols-5 items-end px-2 pt-2.5 pb-2 relative">
+      <a href="dashboard.html" class="nav-item active flex flex-col items-center gap-1 text-[11px]">
+        <i class="fa-solid fa-house text-lg"></i>Home
+      </a>
+      <a href="pages/kegiatan.html" class="nav-item flex flex-col items-center gap-1 text-[11px]">
+        <i class="fa-solid fa-chart-line text-lg"></i>Aktivitas
+      </a>
+      <a href="pages/qr-scanner.html" class="flex flex-col items-center -mt-8">
+        <span class="fab-scan w-14 h-14 rounded-full flex items-center justify-center text-white text-xl">
+          <i class="fa-solid fa-qrcode"></i>
+        </span>
+      </a>
+      <a href="pages/pengumuman.html" class="nav-item flex flex-col items-center gap-1 text-[11px]">
+        <i class="fa-regular fa-bell text-lg"></i>Notifikasi
+      </a>
+      <a href="pages/profil.html" class="nav-item flex flex-col items-center gap-1 text-[11px]">
+        <i class="fa-regular fa-user text-lg"></i>Profil
+      </a>
+    </div>
+  </nav>
+
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

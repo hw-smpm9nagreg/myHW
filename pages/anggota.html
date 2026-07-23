@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+<title>myHW - Anggota</title>
+<link rel="icon" href="https://lh3.googleusercontent.com/d/1csvYSWImSM_A8khBCr8K1ovcKW8wCuaw" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+</head>
+<body class="pb-10" style="background: var(--color-bg);">
+
+  <!-- ===== Header ===== -->
+  <header class="gradient-primary px-4 pt-6 pb-8 flex items-center gap-3" style="border-bottom-left-radius: var(--radius-lg); border-bottom-right-radius: var(--radius-lg);">
+    <a href="../dashboard.html" class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center text-white">
+      <i class="fa-solid fa-arrow-left"></i>
+    </a>
+    <div>
+      <h1 class="text-white font-bold text-lg">Anggota</h1>
+      <p class="text-teal-50/80 text-xs">Kelola data anggota Kepanduan</p>
+    </div>
+  </header>
+
+  <main class="px-4 -mt-4">
+
+    <!-- ===== Search + actions ===== -->
+    <div class="card-soft p-3 flex items-center gap-2">
+      <div class="relative flex-1">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+        <input id="searchInput" type="text" placeholder="Cari nama / nomor anggota..."
+          class="input-soft w-full pl-10 pr-3 py-2.5 text-sm" />
+      </div>
+      <button id="btnFilter" class="w-11 h-11 rounded-[var(--radius-sm)] bg-slate-100 flex items-center justify-center text-slate-600 shrink-0">
+        <i class="fa-solid fa-filter"></i>
+      </button>
+      <button id="btnExport" class="w-11 h-11 rounded-[var(--radius-sm)] bg-slate-100 flex items-center justify-center text-slate-600 shrink-0">
+        <i class="fa-solid fa-file-excel"></i>
+      </button>
+    </div>
+
+    <!-- ===== Filter panel (hidden by default) ===== -->
+    <div id="filterPanel" class="hidden card-soft p-3 mt-3 grid grid-cols-2 gap-2 text-sm">
+      <select id="filterGolongan" class="input-soft py-2 px-3">
+        <option value="">Semua Golongan</option>
+        <option value="Athfal">Athfal</option>
+        <option value="Kepanduan">Kepanduan</option>
+        <option value="Penegak">Penegak</option>
+        <option value="Pandega">Pandega</option>
+      </select>
+      <select id="filterStatus" class="input-soft py-2 px-3">
+        <option value="">Semua Status</option>
+        <option value="aktif">Aktif</option>
+        <option value="nonaktif">Nonaktif</option>
+      </select>
+    </div>
+
+    <!-- ===== List ===== -->
+    <div id="anggotaList" class="mt-4 space-y-3"></div>
+
+    <!-- ===== Pagination ===== -->
+    <div id="pagination" class="flex items-center justify-center gap-2 mt-5 text-sm"></div>
+  </main>
+
+  <!-- ===== FAB Add ===== -->
+  <button id="btnAdd" class="fab-scan fixed bottom-6 right-5 w-14 h-14 rounded-full flex items-center justify-center text-white text-2xl shadow-lg">
+    <i class="fa-solid fa-plus"></i>
+  </button>
+
+  <!-- ===== Form Modal ===== -->
+  <div id="formModal" class="hidden fixed inset-0 bg-black/40 z-40 flex items-end sm:items-center justify-center">
+    <div class="bg-white w-full sm:max-w-lg rounded-t-[var(--radius-lg)] sm:rounded-[var(--radius-lg)] max-h-[92vh] overflow-y-auto">
+      <div class="p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h2 id="formTitle" class="font-bold text-lg text-slate-800">Tambah Anggota</h2>
+          <button id="btnCloseForm" class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <form id="anggotaForm" class="space-y-3 text-sm">
+          <input type="hidden" id="f_id" />
+
+          <div class="flex items-center gap-3">
+            <div id="fotoPreview" class="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 overflow-hidden shrink-0">
+              <i class="fa-solid fa-camera"></i>
+            </div>
+            <div class="flex-1">
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Foto Anggota</label>
+              <input type="file" id="f_foto" accept="image/*" class="text-xs w-full" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div class="col-span-2">
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Nomor Anggota</label>
+              <input id="f_nomorAnggota" class="input-soft w-full px-3 py-2.5" required />
+            </div>
+            <div class="col-span-2">
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Lengkap</label>
+              <input id="f_nama" class="input-soft w-full px-3 py-2.5" required />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Tempat Lahir</label>
+              <input id="f_tempatLahir" class="input-soft w-full px-3 py-2.5" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Tanggal Lahir</label>
+              <input type="date" id="f_tanggalLahir" class="input-soft w-full px-3 py-2.5" />
+            </div>
+            <div class="col-span-2">
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Alamat</label>
+              <textarea id="f_alamat" rows="2" class="input-soft w-full px-3 py-2.5"></textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">No HP</label>
+              <input id="f_noHp" class="input-soft w-full px-3 py-2.5" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Email</label>
+              <input type="email" id="f_email" class="input-soft w-full px-3 py-2.5" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Jenis Kelamin</label>
+              <select id="f_jenisKelamin" class="input-soft w-full px-3 py-2.5">
+                <option value="L">Laki-laki</option>
+                <option value="P">Perempuan</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Golongan</label>
+              <select id="f_golongan" class="input-soft w-full px-3 py-2.5">
+                <option>Athfal</option>
+                <option>Kepanduan</option>
+                <option>Penegak</option>
+                <option>Pandega</option>
+              </select>
+            </div>
+            <div class="col-span-2">
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Qobilah</label>
+              <select id="f_qobilahId" class="input-soft w-full px-3 py-2.5"></select>
+            </div>
+            <div class="col-span-2">
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Status</label>
+              <select id="f_status" class="input-soft w-full px-3 py-2.5">
+                <option value="aktif">Aktif</option>
+                <option value="nonaktif">Nonaktif</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary w-full py-3 mt-2">Simpan Data</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Detail / QR Modal ===== -->
+  <div id="detailModal" class="hidden fixed inset-0 bg-black/40 z-40 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm rounded-[var(--radius-lg)] p-6 text-center">
+      <button id="btnCloseDetail" class="ml-auto block w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 mb-2"><i class="fa-solid fa-xmark"></i></button>
+      <div id="qrCodeCanvas" class="mx-auto w-40 h-40 flex items-center justify-center bg-slate-50 rounded-2xl mb-4"></div>
+      <h3 id="detailNama" class="font-bold text-slate-800"></h3>
+      <p id="detailNomor" class="text-xs text-slate-500 mb-4"></p>
+      <button id="btnPrintCard" class="btn-primary w-full py-2.5"><i class="fa-solid fa-print mr-1"></i> Cetak Kartu Anggota</button>
+    </div>
+  </div>
+
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/ui.js"></script>
+  <script src="../assets/js/pages/anggota.js"></script>
+</body>
+</html>

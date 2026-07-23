@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+<title>myHW - Masuk</title>
+<link rel="icon" href="https://lh3.googleusercontent.com/d/1csvYSWImSM_A8khBCr8K1ovcKW8wCuaw" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="min-h-screen flex items-center justify-center p-0 sm:p-6" style="background: radial-gradient(circle at 20% 10%, #14B8A633, transparent 40%), var(--color-bg);">
+
+  <div class="w-full max-w-sm sm:rounded-[var(--radius-lg)] overflow-hidden sm:shadow-2xl bg-white min-h-screen sm:min-h-0">
+
+    <!-- Header hero -->
+    <div class="gradient-primary relative px-8 pt-14 pb-16 text-center" style="border-bottom-left-radius: var(--radius-lg); border-bottom-right-radius: var(--radius-lg);">
+      <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 16px 16px;"></div>
+      <div class="relative">
+        <div class="mx-auto w-20 h-20 rounded-3xl bg-white/95 flex items-center justify-center shadow-lg mb-4">
+          <img src="https://lh3.googleusercontent.com/d/1csvYSWImSM_A8khBCr8K1ovcKW8wCuaw" alt="Logo myHW" class="w-14 h-14 object-contain" />
+        </div>
+        <h1 class="text-white text-2xl font-extrabold tracking-tight">myHW</h1>
+        <p class="text-teal-50/90 text-sm mt-1">Sistem Administrasi Digital Kepanduan Hizbul Wathan</p>
+      </div>
+    </div>
+
+    <!-- Form card -->
+    <div class="px-7 pt-8 pb-8 -mt-6 relative">
+      <div class="mb-6">
+        <h2 class="text-xl font-bold text-slate-800">Selamat datang 👋</h2>
+        <p class="text-slate-500 text-sm mt-1">Masuk untuk mengakses administrasi Qobilah &amp; anggota</p>
+      </div>
+
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1.5">Email atau Username</label>
+          <div class="relative">
+            <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input type="text" id="username" required placeholder="nama@email.com atau username"
+              class="input-soft w-full pl-11 pr-4 py-3 text-sm" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1.5">Kata Sandi</label>
+          <div class="relative">
+            <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input type="password" id="password" required placeholder="••••••••"
+              class="input-soft w-full pl-11 pr-11 py-3 text-sm" />
+            <button type="button" id="togglePw" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between text-sm pt-1">
+          <label class="flex items-center gap-2 text-slate-600 cursor-pointer">
+            <input type="checkbox" id="rememberMe" class="rounded border-slate-300 text-teal-700 focus:ring-teal-600" />
+            Ingat Saya
+          </label>
+          <a href="#" class="text-teal-700 font-semibold hover:underline">Lupa sandi?</a>
+        </div>
+
+        <button type="submit" class="btn-primary w-full py-3.5 mt-2">Masuk</button>
+
+        <div class="relative py-2 text-center">
+          <span class="bg-white px-3 text-xs text-slate-400 relative z-10">atau lanjutkan dengan</span>
+          <div class="absolute left-0 right-0 top-1/2 border-t border-slate-200"></div>
+        </div>
+
+        <button type="button" id="googleLogin" class="w-full py-3 rounded-[var(--radius-sm)] border border-slate-200 flex items-center justify-center gap-2 font-semibold text-slate-700 hover:bg-slate-50 transition">
+          <i class="fa-brands fa-google text-[#EA4335]"></i> Login dengan Google
+        </button>
+      </form>
+
+      <p class="text-center text-xs text-slate-400 mt-8">© <span id="year"></span> Hizbul Wathan</p>
+    </div>
+  </div>
+
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    if (Auth.isLoggedIn()) window.location.href = 'dashboard.html';
+
+    document.getElementById('togglePw').addEventListener('click', () => {
+      const pw = document.getElementById('password');
+      const icon = document.querySelector('#togglePw i');
+      const show = pw.type === 'password';
+      pw.type = show ? 'text' : 'password';
+      icon.className = show ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      if (!username || !password) return UI.toast('Lengkapi email dan kata sandi', 'error');
+
+      UI.loading('Memeriksa akun...');
+      try {
+        const result = await Auth.login(username, password);
+        UI.closeLoading();
+        if (result.success) {
+          window.location.href = 'dashboard.html';
+        } else {
+          UI.toast(result.message || 'Login gagal', 'error');
+        }
+      } catch (err) {
+        UI.closeLoading();
+        UI.toast('Tidak dapat terhubung ke server', 'error');
+      }
+    });
+
+    document.getElementById('googleLogin').addEventListener('click', () => {
+      UI.toast('Login Google belum dikonfigurasi. Hubungkan OAuth client di sisi backend.', 'warning');
+    });
+  </script>
+</body>
+</html>

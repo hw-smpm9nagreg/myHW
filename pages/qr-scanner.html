@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>myHW - Scan QR</title>
+<link rel="icon" href="https://lh3.googleusercontent.com/d/1csvYSWImSM_A8khBCr8K1ovcKW8wCuaw" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+</head>
+<body style="background: var(--color-bg);">
+
+  <header class="gradient-primary px-4 pt-6 pb-6 flex items-center gap-3" style="border-bottom-left-radius: var(--radius-lg); border-bottom-right-radius: var(--radius-lg);">
+    <a href="../dashboard.html" class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center text-white">
+      <i class="fa-solid fa-arrow-left"></i>
+    </a>
+    <div>
+      <h1 class="text-white font-bold text-lg">Scan QR Absensi</h1>
+      <p class="text-teal-50/80 text-xs">Arahkan kamera ke QR Code kartu anggota</p>
+    </div>
+  </header>
+
+  <main class="px-4 -mt-2">
+    <div class="card-soft p-4 mt-4">
+      <div id="reader" class="rounded-[var(--radius-md)] overflow-hidden"></div>
+    </div>
+
+    <div id="resultCard" class="hidden card-soft p-4 mt-4 flex items-center gap-3">
+      <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      <div>
+        <p id="resultNama" class="font-bold text-slate-800"></p>
+        <p id="resultInfo" class="text-xs text-slate-500"></p>
+      </div>
+    </div>
+  </main>
+
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/ui.js"></script>
+  <script>
+    Auth.requireAuth();
+
+    let scanning = true;
+    const scanner = new Html5Qrcode('reader');
+
+    scanner.start(
+      { facingMode: 'environment' },
+      { fps: 10, qrbox: 220 },
+      async (decodedText) => {
+        if (!scanning) return;
+        scanning = false;
+        await scanner.pause(true);
+
+        UI.loading('Memproses absensi...');
+        try {
+          const result = await Api.post('absensiQr', { qrCode: decodedText });
+          UI.closeLoading();
+          if (result.success) {
+            document.getElementById('resultCard').classList.remove('hidden');
+            document.getElementById('resultNama').textContent = result.data.anggota.nama;
+            document.getElementById('resultInfo').textContent =
+              `Hadir pukul ${result.data.absensi.waktu} - ${result.data.absensi.tanggal}`;
+            UI.toast('Absensi berhasil dicatat');
+          } else {
+            UI.toast(result.message || 'QR tidak dikenali', 'error');
+          }
+        } catch (err) {
+          UI.closeLoading();
+          UI.toast('Tidak dapat terhubung ke server', 'error');
+        }
+
+        setTimeout(async () => { await scanner.resume(); scanning = true; }, 2500);
+      },
+      () => { /* ignore per-frame scan errors */ }
+    ).catch(() => {
+      document.getElementById('reader').innerHTML =
+        '<p class="text-center text-sm text-slate-400 py-10">Tidak dapat mengakses kamera. Periksa izin kamera pada browser.</p>';
+    });
+  </script>
+</body>
+</html>
