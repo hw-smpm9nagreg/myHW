@@ -2,7 +2,7 @@
  * api.js - Fetch wrapper for myHW Google Apps Script backend
  * Ganti API_BASE_URL dengan URL Web App hasil deploy Google Apps Script Anda.
  */
-const API_BASE_URL = 'https://script.google.com/macros/library/d/1AWvzxTWZq1pAlhO6eja_Twvuf9uwwT-AX-naJpeIeNu4ETRdqhX4zR6I/4';
+const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbw-nxLtY8etOFpcU6NiVx33RfzJRDaV7t84F5OnM4vdkuUGli3J8SnX2lgjzJzm3fuZ/exec';
 
 const Api = {
   async get(action, params = {}) {
