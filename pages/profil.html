@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+<title>myHW - Profil</title>
+<link rel="icon" href="https://lh3.googleusercontent.com/d/1csvYSWImSM_A8khBCr8K1ovcKW8wCuaw" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="pb-28" style="background: var(--color-bg);">
+
+  <!-- ===== Header ===== -->
+  <header class="gradient-primary relative px-4 pt-6 pb-16 flex items-center gap-3" style="border-bottom-left-radius: var(--radius-lg); border-bottom-right-radius: var(--radius-lg);">
+    <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 18px 18px;"></div>
+    <a href="../dashboard.html" class="relative w-9 h-9 rounded-full bg-white/15 flex items-center justify-center text-white">
+      <i class="fa-solid fa-arrow-left"></i>
+    </a>
+    <h1 class="relative text-white font-bold text-lg">Profil Saya</h1>
+  </header>
+
+  <main class="px-4 -mt-12 relative">
+
+    <!-- ===== Profile card ===== -->
+    <div class="card-soft p-5 text-center">
+      <div class="relative w-24 h-24 mx-auto">
+        <div id="avatarWrap" class="w-24 h-24 rounded-3xl bg-teal-50 flex items-center justify-center text-3xl font-bold text-primary overflow-hidden">
+          <span id="avatarInitial">?</span>
+        </div>
+        <label class="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs cursor-pointer shadow">
+          <i class="fa-solid fa-camera"></i>
+          <input type="file" id="fotoInput" accept="image/*" class="hidden" />
+        </label>
+      </div>
+      <h2 id="profileNama" class="font-bold text-slate-800 text-lg mt-3">-</h2>
+      <p id="profileJabatan" class="text-xs text-slate-500">-</p>
+
+      <div class="grid grid-cols-2 gap-3 mt-5 text-left">
+        <div class="bg-slate-50 rounded-[var(--radius-sm)] p-3">
+          <p class="text-[10px] text-slate-400 uppercase font-semibold">Nomor Anggota</p>
+          <p id="profileNomor" class="text-sm font-semibold text-slate-700 mt-0.5">-</p>
+        </div>
+        <div class="bg-slate-50 rounded-[var(--radius-sm)] p-3">
+          <p class="text-[10px] text-slate-400 uppercase font-semibold">Qobilah</p>
+          <p id="profileQobilah" class="text-sm font-semibold text-slate-700 mt-0.5">-</p>
+        </div>
+        <div class="bg-slate-50 rounded-[var(--radius-sm)] p-3">
+          <p class="text-[10px] text-slate-400 uppercase font-semibold">Email</p>
+          <p id="profileEmail" class="text-sm font-semibold text-slate-700 mt-0.5 truncate">-</p>
+        </div>
+        <div class="bg-slate-50 rounded-[var(--radius-sm)] p-3">
+          <p class="text-[10px] text-slate-400 uppercase font-semibold">Status</p>
+          <p id="profileStatus" class="text-sm font-semibold text-emerald-600 mt-0.5">Aktif</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Menu list ===== -->
+    <div class="card-soft mt-4 divide-y divide-slate-100">
+      <button id="btnEditProfil" class="w-full flex items-center gap-3 p-4 text-left">
+        <div class="menu-icon bg-teal-50 text-primary w-10 h-10 text-base"><i class="fa-solid fa-user-pen"></i></div>
+        <span class="flex-1 text-sm font-medium text-slate-700">Edit Profil</span>
+        <i class="fa-solid fa-chevron-right text-slate-300 text-xs"></i>
+      </button>
+      <button id="btnChangePassword" class="w-full flex items-center gap-3 p-4 text-left">
+        <div class="menu-icon bg-sky-50 text-sky-500 w-10 h-10 text-base"><i class="fa-solid fa-key"></i></div>
+        <span class="flex-1 text-sm font-medium text-slate-700">Ubah Kata Sandi</span>
+        <i class="fa-solid fa-chevron-right text-slate-300 text-xs"></i>
+      </button>
+      <a href="pengaturan.html" class="w-full flex items-center gap-3 p-4 text-left">
+        <div class="menu-icon bg-slate-100 text-slate-500 w-10 h-10 text-base"><i class="fa-solid fa-gear"></i></div>
+        <span class="flex-1 text-sm font-medium text-slate-700">Pengaturan Aplikasi</span>
+        <i class="fa-solid fa-chevron-right text-slate-300 text-xs"></i>
+      </a>
+      <div class="w-full flex items-center gap-3 p-4">
+        <div class="menu-icon bg-amber-50 text-amber-500 w-10 h-10 text-base"><i class="fa-solid fa-moon"></i></div>
+        <span class="flex-1 text-sm font-medium text-slate-700">Mode Gelap</span>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" id="darkModeToggle" class="sr-only peer" />
+          <div class="w-10 h-6 bg-slate-200 rounded-full peer peer-checked:bg-primary transition"></div>
+          <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"></div>
+        </label>
+      </div>
+    </div>
+
+    <button id="btnLogout" class="w-full mt-4 py-3.5 rounded-[var(--radius-sm)] bg-red-50 text-[var(--color-danger)] font-semibold flex items-center justify-center gap-2">
+      <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar
+    </button>
+
+    <p class="text-center text-xs text-slate-400 mt-6 mb-4">myHW &middot; © <span id="year"></span> Hizbul Wathan</p>
+  </main>
+
+  <!-- ===== Edit Profil Modal ===== -->
+  <div id="editModal" class="hidden fixed inset-0 bg-black/40 z-40 flex items-end sm:items-center justify-center">
+    <div class="bg-white w-full sm:max-w-md rounded-t-[var(--radius-lg)] sm:rounded-[var(--radius-lg)] max-h-[92vh] overflow-y-auto p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold text-lg text-slate-800">Edit Profil</h2>
+        <button id="btnCloseEdit" class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="editForm" class="space-y-3 text-sm">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Lengkap</label>
+          <input id="e_nama" class="input-soft w-full px-3 py-2.5" required />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Email</label>
+          <input type="email" id="e_email" class="input-soft w-full px-3 py-2.5" />
+        </div>
+        <button type="submit" class="btn-primary w-full py-3 mt-2">Simpan Perubahan</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Change Password Modal ===== -->
+  <div id="passwordModal" class="hidden fixed inset-0 bg-black/40 z-40 flex items-end sm:items-center justify-center">
+    <div class="bg-white w-full sm:max-w-md rounded-t-[var(--radius-lg)] sm:rounded-[var(--radius-lg)] max-h-[92vh] overflow-y-auto p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold text-lg text-slate-800">Ubah Kata Sandi</h2>
+        <button id="btnClosePassword" class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="passwordForm" class="space-y-3 text-sm">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Kata Sandi Baru</label>
+          <input type="password" id="p_new" class="input-soft w-full px-3 py-2.5" required minlength="6" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Ulangi Kata Sandi Baru</label>
+          <input type="password" id="p_confirm" class="input-soft w-full px-3 py-2.5" required minlength="6" />
+        </div>
+        <button type="submit" class="btn-primary w-full py-3 mt-2">Simpan Kata Sandi</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Bottom Navigation ===== -->
+  <nav class="bottom-nav fixed bottom-0 left-0 right-0 bg-white safe-bottom">
+    <div class="grid grid-cols-5 items-end px-2 pt-2.5 pb-2 relative">
+      <a href="../dashboard.html" class="nav-item flex flex-col items-center gap-1 text-[11px]">
+        <i class="fa-solid fa-house text-lg"></i>Home
+      </a>
+      <a href="kegiatan.html" class="nav-item flex flex-col items-center gap-1 text-[11px]">
+        <i class="fa-solid fa-chart-line text-lg"></i>Aktivitas
+      </a>
+      <a href="qr-scanner.html" class="flex flex-col items-center -mt-8">
+        <span class="fab-scan w-14 h-14 rounded-full flex items-center justify-center text-white text-xl">
+          <i class="fa-solid fa-qrcode"></i>
+        </span>
+      </a>
+      <a href="pengumuman.html" class="nav-item flex flex-col items-center gap-1 text-[11px]">
+        <i class="fa-regular fa-bell text-lg"></i>Notifikasi
+      </a>
+      <a href="profil.html" class="nav-item active flex flex-col items-center gap-1 text-[11px]">
+        <i class="fa-solid fa-user text-lg"></i>Profil
+      </a>
+    </div>
+  </nav>
+
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/ui.js"></script>
+  <script src="../assets/js/pages/profil.js"></script>
+</body>
+</html>
