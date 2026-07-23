@@ -1,7 +1,7 @@
 /**
  * pages/keuangan.js - Modul Keuangan
  */
-Auth.requireAuth();
+Auth.requireRole('admin', 'bendahara');
 
 const session = Auth.getSession();
 let allKeuangan = [];
