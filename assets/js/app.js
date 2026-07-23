@@ -6,12 +6,23 @@ Auth.requireAuth();
 const session = Auth.getSession();
 if (session) {
   document.getElementById('greetName').textContent = session.nama || session.username;
+  const roleLabels = { admin: 'Administrator', pembina: 'Pembina', bendahara: 'Bendahara', anggota: 'Anggota' };
   document.getElementById('greetRole').innerHTML =
-    `<i class="fa-solid fa-shield-halved mr-1"></i>${session.role === 'admin' ? 'Administrator' : (session.jabatan || 'Anggota')}`;
+    `<i class="fa-solid fa-shield-halved mr-1"></i>${roleLabels[session.role] || session.jabatan || 'Anggota'}`;
   document.getElementById('profileName').textContent = session.nama || session.username;
   document.getElementById('profileNomor').textContent = session.nomorAnggota || '-';
   document.getElementById('profileQobilah').textContent = session.qobilah || '-';
   document.getElementById('avatarInitial').textContent = (session.nama || session.username || '?').charAt(0).toUpperCase();
+}
+
+// ------------------------------------------------------------------
+// Sembunyikan menu yang tidak diizinkan untuk role pengguna saat ini
+// ------------------------------------------------------------------
+if (session) {
+  document.querySelectorAll('[data-roles]').forEach((el) => {
+    const allowedRoles = el.dataset.roles.split(',');
+    if (!allowedRoles.includes(session.role)) el.classList.add('hidden');
+  });
 }
 
 document.getElementById('btnLogout').addEventListener('click', async () => {
