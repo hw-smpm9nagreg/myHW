@@ -12,7 +12,11 @@ if (session) {
   document.getElementById('profileName').textContent = session.nama || session.username;
   document.getElementById('profileNomor').textContent = session.nomorAnggota || '-';
   document.getElementById('profileQobilah').textContent = session.qobilah || '-';
-  document.getElementById('avatarInitial').textContent = (session.nama || session.username || '?').charAt(0).toUpperCase();
+  if (session.fotoUrl) {
+    document.getElementById('avatarWrap').innerHTML = `<img src="${session.fotoUrl}" class="w-full h-full object-cover" alt="Foto profil" />`;
+  } else {
+    document.getElementById('avatarInitial').textContent = (session.nama || session.username || '?').charAt(0).toUpperCase();
+  }
 }
 
 // ------------------------------------------------------------------
