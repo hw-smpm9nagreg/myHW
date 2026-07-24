@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+<title>myHW - Kartu Anggota</title>
+<link rel="icon" href="https://lh3.googleusercontent.com/d/1csvYSWImSM_A8khBCr8K1ovcKW8wCuaw" />
+<link rel="manifest" href="../manifest.json" />
+<meta name="theme-color" content="#0F766E" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="pb-10" style="background: var(--color-bg);">
+
+  <header class="gradient-primary px-4 pt-6 pb-8 flex items-center gap-3" style="border-bottom-left-radius: var(--radius-lg); border-bottom-right-radius: var(--radius-lg);">
+    <a href="../dashboard.html" class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center text-white">
+      <i class="fa-solid fa-arrow-left"></i>
+    </a>
+    <div>
+      <h1 class="text-white font-bold text-lg">Kartu Anggota</h1>
+      <p class="text-teal-50/80 text-xs">Kartu tanda anggota digital Anda</p>
+    </div>
+  </header>
+
+  <main class="px-4 -mt-4">
+    <div id="cardWrap" class="mt-2"></div>
+  </main>
+
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/ui.js"></script>
+  <script src="../assets/js/pages/kartu-anggota.js"></script>
+  <script>window.PWA_SW_PATH = "../sw.js"; window.PWA_SCOPE = "../";</script>
+  <script src="../assets/js/pwa.js"></script>
+</body>
+</html>
