@@ -1,13 +1,16 @@
 /**
  * sw.js - Service Worker untuk myHW
- * Strategi: cache-first untuk app shell (HTML/CSS/JS milik sendiri),
- * network-first dengan fallback ke cache untuk request lain (termasuk API GAS).
+ * Strategi: network-first untuk semua file sendiri (HTML/CSS/JS) - selalu ambil versi
+ * terbaru dari server kalau online, cache hanya dipakai sebagai fallback saat offline.
+ * (Sebelumnya cache-first menyebabkan versi lama tetap tampil setelah update di-deploy.)
  * Catatan: karena backend GAS butuh koneksi internet untuk baca/tulis data,
  * mode offline di sini hanya menjaga APLIKASI (shell) tetap bisa dibuka,
  * bukan membuat data tersinkron penuh secara offline.
  */
 
-const CACHE_NAME = 'myhw-cache-v1';
+// Naikkan angka versi ini setiap kali struktur/isi app shell berubah signifikan,
+// supaya cache lama otomatis dibersihkan di sisi pengguna.
+const CACHE_NAME = 'myhw-cache-v2';
 
 const APP_SHELL = [
   './index.html',
@@ -29,6 +32,8 @@ const APP_SHELL = [
   './pages/skt-tkt.html',
   './pages/inventaris.html',
   './pages/qr-scanner.html',
+  './pages/kartu-anggota.html',
+  './pages/pengguna.html',
   './assets/js/pages/anggota.js',
   './assets/js/pages/profil.js',
   './assets/js/pages/qobilah.js',
@@ -36,6 +41,8 @@ const APP_SHELL = [
   './assets/js/pages/keuangan.js',
   './assets/js/pages/skt-tkt.js',
   './assets/js/pages/inventaris.js',
+  './assets/js/pages/kartu-anggota.js',
+  './assets/js/pages/pengguna.js',
 ];
 
 self.addEventListener('install', (event) => {
@@ -60,33 +67,15 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return; // never cache POST (writes to GAS API)
 
-  const url = new URL(req.url);
-  const isSameOrigin = url.origin === self.location.origin;
-
-  if (isSameOrigin) {
-    // App shell: cache-first, refresh cache in background
-    event.respondWith(
-      caches.match(req).then((cached) => {
-        const networkFetch = fetch(req)
-          .then((res) => {
-            const resClone = res.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(req, resClone));
-            return res;
-          })
-          .catch(() => cached);
-        return cached || networkFetch;
+  // Network-first untuk semua request: selalu coba ambil versi terbaru dulu.
+  // Kalau gagal (offline / server tidak terjangkau), baru pakai cache sebagai fallback.
+  event.respondWith(
+    fetch(req)
+      .then((res) => {
+        const resClone = res.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(req, resClone)).catch(() => {});
+        return res;
       })
-    );
-  } else {
-    // External resources (CDN, GAS API, images): network-first, fallback to cache
-    event.respondWith(
-      fetch(req)
-        .then((res) => {
-          const resClone = res.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(req, resClone));
-          return res;
-        })
-        .catch(() => caches.match(req))
-    );
-  }
+      .catch(() => caches.match(req))
+  );
 });

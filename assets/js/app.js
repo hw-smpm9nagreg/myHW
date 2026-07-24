@@ -35,6 +35,42 @@ document.getElementById('btnLogout').addEventListener('click', async () => {
 });
 
 // ------------------------------------------------------------------
+// Data Anggota milik sendiri (nomor anggota, qobilah, foto, status)
+// Session login hanya menyimpan data akun (users), bukan data keanggotaan,
+// jadi info kartu di kartu profil diambil terpisah dari sheet 'anggota'.
+// ------------------------------------------------------------------
+async function loadMyAnggota() {
+  try {
+    const result = await Api.get('getMyAnggota');
+    if (!result.success) return; // akun tanpa data anggota (mis. admin) - biarkan tampil default "-"
+    const a = result.data;
+
+    document.getElementById('profileName').textContent = a.nama || session.nama || session.username;
+    document.getElementById('profileNomor').textContent = a.nomorAnggota || '-';
+
+    const isActive = a.status === 'aktif';
+    document.getElementById('profileStatusText').textContent = isActive ? 'Aktif' : 'Nonaktif';
+    document.getElementById('profileStatusBadge').className =
+      `text-xs font-semibold text-white px-3 py-1.5 rounded-full flex items-center gap-1 ${isActive ? 'bg-[var(--color-success)]' : 'bg-slate-400'}`;
+
+    if (a.fotoUrl) {
+      document.getElementById('avatarWrap').innerHTML = `<img src="${a.fotoUrl}" class="w-full h-full object-cover" alt="Foto profil" />`;
+    }
+
+    if (a.qobilahId) {
+      const qobilahRes = await Api.get('getQobilah');
+      if (qobilahRes.success) {
+        const q = qobilahRes.data.find(q => q.id === a.qobilahId);
+        document.getElementById('profileQobilah').textContent = q ? q.nama : '-';
+      }
+    }
+  } catch (err) {
+    // biarkan tampilan default "-" jika gagal memuat
+  }
+}
+loadMyAnggota();
+
+// ------------------------------------------------------------------
 // Ringkasan cards
 // ------------------------------------------------------------------
 const summaryConfig = [

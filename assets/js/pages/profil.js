@@ -8,7 +8,8 @@ document.getElementById('year').textContent = new Date().getFullYear();
 
 function renderProfile() {
   document.getElementById('profileNama').textContent = session.nama || session.username;
-  document.getElementById('profileJabatan').textContent = session.role === 'admin' ? 'Administrator' : (session.jabatan || 'Anggota');
+  const roleLabels = { admin: 'Administrator', pembina: 'Pembina', bendahara: 'Bendahara', anggota: 'Anggota' };
+  document.getElementById('profileJabatan').textContent = roleLabels[session.role] || session.jabatan || 'Anggota';
   document.getElementById('profileNomor').textContent = session.nomorAnggota || '-';
   document.getElementById('profileQobilah').textContent = session.qobilah || '-';
   document.getElementById('profileEmail').textContent = session.email || '-';

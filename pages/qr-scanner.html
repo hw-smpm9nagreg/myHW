@@ -9,6 +9,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/style.css" />
+<link rel="manifest" href="../manifest.json" />
+<meta name="theme-color" content="#0F766E" />
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </head>
@@ -83,5 +85,7 @@
         '<p class="text-center text-sm text-slate-400 py-10">Tidak dapat mengakses kamera. Periksa izin kamera pada browser.</p>';
     });
   </script>
+  <script>window.PWA_SW_PATH = "../sw.js"; window.PWA_SCOPE = "../";</script>
+  <script src="../assets/js/pwa.js"></script>
 </body>
 </html>
