@@ -1,7 +1,7 @@
 /**
  * pages/absensi.js - Modul Absensi (manual + riwayat gabungan dengan QR)
  */
-Auth.requireAuth();
+Auth.requireRole('admin', 'pembina');
 
 let allAbsensi = [];
 let allAnggota = [];

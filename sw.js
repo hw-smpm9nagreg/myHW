@@ -10,7 +10,7 @@
 
 // Naikkan angka versi ini setiap kali struktur/isi app shell berubah signifikan,
 // supaya cache lama otomatis dibersihkan di sisi pengguna.
-const CACHE_NAME = 'myhw-cache-v4';
+const CACHE_NAME = 'myhw-cache-v11';
 
 const APP_SHELL = [
   './index.html',
@@ -39,6 +39,10 @@ const APP_SHELL = [
   './pages/prestasi.html',
   './pages/surat.html',
   './pages/dokumen.html',
+  './pages/verifikasi.html',
+  './pages/lengkapi-profil.html',
+  './pages/laporan.html',
+  './pages/pengaturan.html',
   './assets/js/pages/anggota.js',
   './assets/js/pages/profil.js',
   './assets/js/pages/qobilah.js',
@@ -53,6 +57,10 @@ const APP_SHELL = [
   './assets/js/pages/prestasi.js',
   './assets/js/pages/surat.js',
   './assets/js/pages/dokumen.js',
+  './assets/js/pages/verifikasi.js',
+  './assets/js/pages/lengkapi-profil.js',
+  './assets/js/pages/laporan.js',
+  './assets/js/pages/pengaturan.js',
 ];
 
 self.addEventListener('install', (event) => {

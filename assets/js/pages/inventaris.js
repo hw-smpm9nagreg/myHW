@@ -1,7 +1,7 @@
 /**
  * pages/inventaris.js - Modul Inventaris
  */
-Auth.requireAuth();
+Auth.requireRole('admin', 'pembina');
 
 let allBarang = [];
 let allPeminjaman = [];

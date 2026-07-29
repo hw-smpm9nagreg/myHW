@@ -19,7 +19,7 @@ async function loadData() {
   try {
     const [sktRes, anggotaRes] = await Promise.all([
       Api.get('getSktTkt'),
-      Api.get('getAnggota'),
+      Api.get('getAnggotaRingkas'),
     ]);
     allRecords = sktRes.success ? sktRes.data : [];
     allAnggota = anggotaRes.success ? anggotaRes.data : [];

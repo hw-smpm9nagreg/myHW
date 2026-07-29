@@ -1,7 +1,7 @@
 /**
  * pages/qobilah.js - Modul Qobilah
  */
-Auth.requireAuth();
+Auth.requireRole('admin', 'pembina');
 
 let allQobilah = [];
 let allAnggota = [];

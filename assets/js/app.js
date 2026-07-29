@@ -42,22 +42,39 @@ document.getElementById('btnLogout').addEventListener('click', async () => {
 async function loadMyAnggota() {
   try {
     const result = await Api.get('getMyAnggota');
-    if (!result.success) return; // akun tanpa data anggota (mis. admin) - biarkan tampil default "-"
+    if (!result.success) {
+      // Khusus role 'anggota': kalau belum ada data anggota yang terhubung, berarti
+      // pendaftaran belum diselesaikan - arahkan ke form Lengkapi Pendaftaran.
+      // Role lain (admin/pembina/bendahara) memang wajar tidak selalu punya data anggota.
+      if (session && session.role === 'anggota') {
+        window.location.href = 'pages/lengkapi-profil.html';
+      }
+      return;
+    }
     const a = result.data;
+    const isPending = a.statusApproval === 'pending';
 
     document.getElementById('profileName').textContent = a.nama || session.nama || session.username;
-    document.getElementById('profileNomor').textContent = a.nomorAnggota || '-';
+    document.getElementById('profileNomor').textContent = isPending ? 'Menunggu ACC Admin' : (a.nomorAnggota || '-');
 
-    const isActive = a.status === 'aktif';
-    document.getElementById('profileStatusText').textContent = isActive ? 'Aktif' : 'Nonaktif';
-    document.getElementById('profileStatusBadge').className =
-      `text-xs font-semibold text-white px-3 py-1.5 rounded-full flex items-center gap-1 ${isActive ? 'bg-[var(--color-success)]' : 'bg-slate-400'}`;
+    if (isPending) {
+      document.getElementById('profileStatusText').textContent = 'Menunggu ACC';
+      document.getElementById('profileStatusBadge').className =
+        'text-xs font-semibold text-white px-3 py-1.5 rounded-full flex items-center gap-1 bg-amber-500';
+    } else {
+      const isActive = a.status === 'aktif';
+      document.getElementById('profileStatusText').textContent = isActive ? 'Aktif' : 'Nonaktif';
+      document.getElementById('profileStatusBadge').className =
+        `text-xs font-semibold text-white px-3 py-1.5 rounded-full flex items-center gap-1 ${isActive ? 'bg-[var(--color-success)]' : 'bg-slate-400'}`;
+    }
 
     if (a.fotoUrl) {
       document.getElementById('avatarWrap').innerHTML = `<img src="${a.fotoUrl}" class="w-full h-full object-cover" alt="Foto profil" />`;
     }
 
-    if (a.qobilahId) {
+    if (isPending) {
+      document.getElementById('profileQobilah').textContent = 'Menunggu ACC Admin';
+    } else if (a.qobilahId) {
       const qobilahRes = await Api.get('getQobilah');
       if (qobilahRes.success) {
         const q = qobilahRes.data.find(q => q.id === a.qobilahId);
@@ -87,17 +104,25 @@ async function loadSummary() {
   try {
     const result = await Api.get('getDashboardSummary');
     const data = result.success ? result.data : {};
-    container.innerHTML = summaryConfig.map(cfg => `
+    container.innerHTML = summaryConfig.map(cfg => {
+      let displayValue;
+      if (cfg.key === 'saldoKas' && data.kasVisible === false) {
+        displayValue = '<i class="fa-solid fa-lock text-[10px] mr-1"></i>Menunggu ACC';
+      } else {
+        displayValue = cfg.currency ? UI.formatCurrency(data[cfg.key]) : (data[cfg.key] ?? 0);
+      }
+      return `
       <div class="card-soft p-4 flex items-center gap-3">
         <div class="menu-icon ${cfg.color}"><i class="fa-solid ${cfg.icon}"></i></div>
         <div class="min-w-0">
           <p class="text-[11px] text-slate-500 truncate">${cfg.label}</p>
           <p class="font-bold text-slate-800 text-sm truncate">
-            ${cfg.currency ? UI.formatCurrency(data[cfg.key]) : (data[cfg.key] ?? 0)}
+            ${displayValue}
           </p>
         </div>
       </div>
-    `).join('');
+    `;
+    }).join('');
   } catch (err) {
     container.innerHTML = `<p class="col-span-2 text-center text-sm text-slate-400 py-6">Gagal memuat ringkasan</p>`;
   }

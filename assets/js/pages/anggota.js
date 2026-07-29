@@ -1,7 +1,7 @@
 /**
  * pages/anggota.js - Modul Anggota (CRUD lengkap)
  */
-Auth.requireAuth();
+Auth.requireRole('admin', 'pembina');
 
 const PAGE_SIZE = 10;
 let allData = [];
@@ -48,12 +48,15 @@ function applyFilters() {
   const q = document.getElementById('searchInput').value.toLowerCase();
   const golongan = document.getElementById('filterGolongan').value;
   const status = document.getElementById('filterStatus').value;
+  const acc = document.getElementById('filterAcc').value;
 
   filteredData = allData.filter(a => {
     const matchQ = !q || `${a.nama} ${a.nomorAnggota}`.toLowerCase().includes(q);
     const matchGolongan = !golongan || a.golongan === golongan;
     const matchStatus = !status || a.status === status;
-    return matchQ && matchGolongan && matchStatus;
+    const isPending = a.statusApproval === 'pending';
+    const matchAcc = !acc || (acc === 'pending' ? isPending : !isPending);
+    return matchQ && matchGolongan && matchStatus && matchAcc;
   });
   currentPage = 1;
   renderList();
@@ -62,6 +65,7 @@ function applyFilters() {
 document.getElementById('searchInput').addEventListener('input', applyFilters);
 document.getElementById('filterGolongan').addEventListener('change', applyFilters);
 document.getElementById('filterStatus').addEventListener('change', applyFilters);
+document.getElementById('filterAcc').addEventListener('change', applyFilters);
 document.getElementById('btnFilter').addEventListener('click', () => {
   document.getElementById('filterPanel').classList.toggle('hidden');
 });
@@ -77,24 +81,31 @@ function renderList() {
   if (!pageData.length) {
     list.innerHTML = `<p class="text-center text-sm text-slate-400 py-10"><i class="fa-solid fa-user-slash text-2xl mb-2 block"></i>Belum ada data anggota</p>`;
   } else {
-    list.innerHTML = pageData.map(a => `
+    list.innerHTML = pageData.map(a => {
+      const isPending = a.statusApproval === 'pending';
+      return `
       <div class="card-soft p-3.5 flex items-center gap-3">
         <div class="w-12 h-12 rounded-xl bg-teal-50 flex items-center justify-center text-primary font-bold shrink-0 overflow-hidden">
           ${a.fotoUrl ? `<img src="${a.fotoUrl}" class="w-full h-full object-cover" />` : (a.nama || '?').charAt(0).toUpperCase()}
         </div>
         <div class="flex-1 min-w-0">
           <p class="font-semibold text-slate-800 text-sm truncate">${a.nama || '-'}</p>
-          <p class="text-xs text-slate-500 truncate">${a.nomorAnggota || '-'} &middot; ${a.golongan || '-'} &middot; ${qobilahName(a.qobilahId)}</p>
+          <p class="text-xs text-slate-500 truncate">${isPending ? 'Menunggu ACC' : (a.nomorAnggota || '-')} &middot; ${a.golongan || '-'} &middot; ${isPending ? '-' : qobilahName(a.qobilahId)}</p>
         </div>
-        <span class="text-[10px] font-semibold px-2 py-1 rounded-full ${a.status === 'aktif' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'}">
-          ${a.status === 'aktif' ? 'Aktif' : 'Nonaktif'}
-        </span>
-        <div class="flex flex-col gap-1.5 shrink-0">
-          <button onclick="openDetail('${a.id}')" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center"><i class="fa-solid fa-qrcode text-xs"></i></button>
-          <button onclick="editAnggota('${a.id}')" class="w-8 h-8 rounded-lg bg-teal-50 text-primary flex items-center justify-center"><i class="fa-solid fa-pen text-xs"></i></button>
-        </div>
+        ${isPending
+          ? `<span class="text-[10px] font-semibold px-2 py-1 rounded-full bg-amber-50 text-amber-600 shrink-0">Menunggu ACC</span>
+             <button onclick="openAcc('${a.id}')" class="w-8 h-8 rounded-lg bg-amber-500 text-white flex items-center justify-center shrink-0"><i class="fa-solid fa-check text-xs"></i></button>`
+          : `<span class="text-[10px] font-semibold px-2 py-1 rounded-full ${a.status === 'aktif' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'}">
+              ${a.status === 'aktif' ? 'Aktif' : 'Nonaktif'}
+            </span>
+            <div class="flex flex-col gap-1.5 shrink-0">
+              <button onclick="openDetail('${a.id}')" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center"><i class="fa-solid fa-qrcode text-xs"></i></button>
+              <button onclick="editAnggota('${a.id}')" class="w-8 h-8 rounded-lg bg-teal-50 text-primary flex items-center justify-center"><i class="fa-solid fa-pen text-xs"></i></button>
+            </div>`
+        }
       </div>
-    `).join('');
+    `;
+    }).join('');
   }
 
   renderPagination();
@@ -232,7 +243,7 @@ document.getElementById('btnExport').addEventListener('click', () => {
   const rows = filteredData.map(a => ({
     'Nomor Anggota': a.nomorAnggota,
     'Nama': a.nama,
-    'Golongan': a.golongan,
+    'Tingkatan': a.golongan,
     'Qobilah': qobilahName(a.qobilahId),
     'Status': a.status,
     'No HP': a.noHp,
@@ -244,9 +255,49 @@ document.getElementById('btnExport').addEventListener('click', () => {
   XLSX.writeFile(wb, `Data_Anggota_myHW_${new Date().toISOString().slice(0, 10)}.xlsx`);
 });
 
+// ------------------------------------------------------------------
+// ACC / Persetujuan pendaftaran anggota baru
+// ------------------------------------------------------------------
+const accModal = document.getElementById('accModal');
+
+function openAcc(id) {
+  const data = allData.find(a => a.id === id);
+  if (!data) return;
+  document.getElementById('acc_id').value = data.id;
+  document.getElementById('accNama').textContent = `${data.nama || '-'} (${data.golongan || '-'})`;
+  document.getElementById('acc_qobilahId').innerHTML = '<option value="">- Pilih Qobilah -</option>' +
+    qobilahOptions.map(q => `<option value="${q.id}">${q.nama}</option>`).join('');
+  accModal.classList.remove('hidden');
+}
+document.getElementById('btnCloseAcc').addEventListener('click', () => accModal.classList.add('hidden'));
+
+document.getElementById('accForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const payload = {
+    id: document.getElementById('acc_id').value,
+    qobilahId: document.getElementById('acc_qobilahId').value,
+  };
+  UI.loading('Menyetujui pendaftaran...');
+  try {
+    const result = await Api.post('approveAnggota', payload);
+    UI.closeLoading();
+    if (result.success) {
+      UI.toast('Pendaftaran disetujui, nomor anggota telah dibuat');
+      accModal.classList.add('hidden');
+      loadAnggota();
+    } else {
+      UI.toast(result.message || 'Gagal menyetujui pendaftaran', 'error');
+    }
+  } catch (err) {
+    UI.closeLoading();
+    UI.toast('Tidak dapat terhubung ke server', 'error');
+  }
+});
+
 // expose to inline handlers
 window.editAnggota = editAnggota;
 window.openDetail = openDetail;
 window.goToPage = goToPage;
+window.openAcc = openAcc;
 
 loadAnggota();

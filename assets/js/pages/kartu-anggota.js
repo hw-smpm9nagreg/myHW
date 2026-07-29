@@ -1,5 +1,8 @@
 /**
  * pages/kartu-anggota.js - Kartu Anggota milik sendiri
+ * Satu elemen kartu (id="kartuAnggotaCard") dipakai untuk tampilan layar
+ * maupun hasil cetak - background-nya adalah gambar template KTA resmi,
+ * data anggota ditempel di atasnya lewat overlay posisi persen.
  */
 Auth.requireAuth();
 
@@ -25,35 +28,56 @@ async function loadKartu() {
 
 function renderCard(a) {
   const wrap = document.getElementById('cardWrap');
+
+  if (a.statusApproval === 'pending') {
+    wrap.innerHTML = `
+      <div class="card-soft p-8 text-center">
+        <div class="w-16 h-16 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center text-3xl mx-auto mb-3">
+          <i class="fa-solid fa-hourglass-half"></i>
+        </div>
+        <h2 class="font-bold text-slate-800">Menunggu Persetujuan Admin</h2>
+        <p class="text-xs text-slate-500 mt-1">Pendaftaran Anda sedang ditinjau oleh admin/pembina. Kartu anggota &amp; QR Code resmi akan tersedia di sini setelah disetujui.</p>
+      </div>`;
+    return;
+  }
+
+  const ttl = [a.tempatLahir, formatTanggalSingkat(a.tanggalLahir)].filter(Boolean).join(', ');
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(a.qrCode || a.id)}`;
+  const fotoTag = a.fotoUrl
+    ? `<img src="${a.fotoUrl}" style="width: 100%; height: 100%; object-fit: cover;" />`
+    : '';
+
   wrap.innerHTML = `
-    <div class="card-soft overflow-hidden">
-      <div class="gradient-primary p-5 text-center relative">
-        <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 16px 16px;"></div>
-        <div class="relative">
-          <p class="text-teal-50 text-xs font-semibold tracking-wide">KARTU TANDA ANGGOTA</p>
-          <p class="text-white font-bold text-lg -mt-0.5">Hizbul Wathan</p>
-        </div>
-      </div>
-      <div class="p-5 text-center -mt-2">
-        <div class="w-24 h-24 rounded-3xl bg-teal-50 mx-auto flex items-center justify-center text-3xl font-bold text-primary overflow-hidden border-4 border-white shadow -mt-10 relative bg-white">
-          ${a.fotoUrl ? `<img src="${a.fotoUrl}" class="w-full h-full object-cover rounded-3xl" />` : (a.nama || '?').charAt(0).toUpperCase()}
-        </div>
-        <h2 class="font-bold text-slate-800 text-lg mt-3">${a.nama || '-'}</h2>
-        <p class="text-xs text-slate-500">${a.nomorAnggota || '-'} &middot; ${a.golongan || '-'}</p>
-        <span class="inline-block text-[10px] font-semibold px-2.5 py-1 rounded-full mt-2 ${a.status === 'aktif' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'}">
-          ${a.status === 'aktif' ? 'Aktif' : 'Nonaktif'}
-        </span>
+    <div id="kartuAnggotaCard" class="kta-card">
+      <p class="kta-overlay kta-nomor" style="top: 30%; left: 0; right: 0; text-align: center; font-weight: 800;">${a.nomorAnggota || '-'}</p>
 
-        <div class="w-44 h-44 mx-auto mt-5 bg-slate-50 rounded-2xl flex items-center justify-center">
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=${encodeURIComponent(a.qrCode || a.id)}" class="w-40 h-40" alt="QR Code Anggota" />
-        </div>
-        <p class="text-[10px] text-slate-400 mt-2">Tunjukkan QR ini saat presensi kegiatan</p>
+      <div class="kta-overlay" style="top: 41%; left: 4%; width: 19%; height: 42%; border-radius: 4px; overflow: hidden; background: #F1F5F9;">${fotoTag}</div>
 
-        <button id="btnPrint" class="btn-primary w-full py-2.5 mt-5"><i class="fa-solid fa-print mr-1"></i> Cetak Kartu</button>
+      <table class="kta-overlay kta-table" style="top: 44%; left: 26%; width: 48%; border-collapse: collapse;">
+        <tr><td style="width: 30%; font-weight: 600; padding: 3px 0;">Nama</td><td style="width: 8%;">:</td><td style="font-weight: 600;">${a.nama || '-'}</td></tr>
+        <tr><td style="font-weight: 600; padding: 3px 0;">TTL</td><td>:</td><td>${ttl || '-'}</td></tr>
+        <tr><td style="font-weight: 600; padding: 3px 0;">Tingkatan</td><td>:</td><td>${a.golongan || '-'}</td></tr>
+        <tr><td style="font-weight: 600; padding: 3px 0; vertical-align: top;">Alamat</td><td style="vertical-align: top;">:</td><td style="vertical-align: top;">${a.alamat || '-'}</td></tr>
+      </table>
+
+      <div class="kta-overlay" style="top: 66%; right: 4%; width: 19%; height: 29%;">
+        <img src="${qrUrl}" style="width: 100%; height: 100%;" alt="QR Code Anggota" />
       </div>
     </div>
+
+    <p class="text-center text-xs text-slate-400 mt-3 print:hidden">Tunjukkan QR ini saat presensi kegiatan</p>
+    <button id="btnPrint" class="btn-primary w-full py-2.5 mt-4 print:hidden"><i class="fa-solid fa-print mr-1"></i> Cetak Kartu</button>
   `;
   document.getElementById('btnPrint').addEventListener('click', () => window.print());
+}
+
+function formatTanggalSingkat(tanggal) {
+  if (!tanggal) return '';
+  const d = new Date(tanggal);
+  if (isNaN(d)) return '';
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  return `${dd}-${mm}-${d.getFullYear()}`;
 }
 
 loadKartu();

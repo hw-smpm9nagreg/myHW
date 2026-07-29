@@ -51,8 +51,12 @@ function renderList(data) {
     <div class="card-soft p-3.5 flex items-center gap-3">
       <div class="menu-icon w-11 h-11 text-base shrink-0 ${iconClass}"><i class="fa-solid ${iconClass.split(' ')[0]}"></i></div>
       <div class="flex-1 min-w-0">
-        <p class="font-semibold text-slate-800 text-sm truncate">${d.namaFile || '-'}</p>
+        <div class="flex items-center gap-1.5">
+          <p class="font-semibold text-slate-800 text-sm truncate">${d.namaFile || '-'}</p>
+          ${d.kodeVerifikasi ? '<i class="fa-solid fa-circle-check text-emerald-500 text-xs shrink-0" title="Terverifikasi"></i>' : ''}
+        </div>
         <p class="text-xs text-slate-500 truncate">${d.kategori || '-'} &middot; ${UI.formatDate(d.createdAt)}${d.uploadBy ? ' &middot; ' + d.uploadBy : ''}</p>
+        ${d.kodeVerifikasi ? `<button onclick="showPengesahan('${d.id}')" class="text-[10px] text-primary font-semibold mt-0.5"><i class="fa-solid fa-stamp mr-0.5"></i>Lembar Pengesahan</button>` : ''}
       </div>
       <div class="flex gap-1.5 shrink-0">
         ${isPdf ? `<button onclick="previewDokumen('${d.id}')" class="w-8 h-8 rounded-lg bg-teal-50 text-primary flex items-center justify-center"><i class="fa-solid fa-eye text-xs"></i></button>` : ''}
@@ -63,6 +67,17 @@ function renderList(data) {
   `;
   }).join('');
 }
+
+function showPengesahan(id) {
+  const d = allDokumen.find(d => d.id === id);
+  if (!d) return;
+  if (d.sertifikatUrl) {
+    window.open(d.sertifikatUrl, '_blank');
+  } else {
+    UI.toast('Kode verifikasi: ' + d.kodeVerifikasi, 'info');
+  }
+}
+window.showPengesahan = showPengesahan;
 
 // ------------------------------------------------------------------
 // Preview (Google Docs Viewer untuk PDF)
@@ -97,16 +112,24 @@ document.getElementById('dokumenForm').addEventListener('submit', async (e) => {
 
   UI.loading('Mengunggah dokumen...');
   try {
-    const uploadResult = await Api.uploadFile(file, 'myHW-dokumen');
+    const kategori = document.getElementById('f_kategori').value;
+    const uploadBy = session ? (session.nama || session.username) : '';
+    const uploadResult = await Api.uploadFile(file, 'myHW-dokumen', {
+      withPengesahan: true,
+      kategoriPengesahan: kategori,
+      uploadBy,
+    });
     if (!uploadResult.success) {
       UI.closeLoading();
       return UI.toast('Gagal mengunggah file', 'error');
     }
     const payload = {
       namaFile: document.getElementById('f_namaFile').value || file.name,
-      kategori: document.getElementById('f_kategori').value,
+      kategori,
       fileUrl: uploadResult.data.url,
-      uploadBy: session ? (session.nama || session.username) : '',
+      uploadBy,
+      kodeVerifikasi: uploadResult.data.kodeVerifikasi || '',
+      sertifikatUrl: uploadResult.data.sertifikatUrl || '',
     };
     const result = await Api.post('addDokumen', payload);
     UI.closeLoading();

@@ -102,6 +102,10 @@
       icon.className = show ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
     });
 
+    function redirectAfterLogin(user) {
+      window.location.href = user.needsRegistration ? 'pages/lengkapi-profil.html' : 'dashboard.html';
+    }
+
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const username = document.getElementById('username').value.trim();
@@ -113,7 +117,7 @@
         const result = await Auth.login(username, password);
         UI.closeLoading();
         if (result.success) {
-          window.location.href = 'dashboard.html';
+          redirectAfterLogin(result.data);
         } else {
           UI.toast(result.message || 'Login gagal', 'error');
         }
@@ -133,7 +137,7 @@
         UI.closeLoading();
         if (result.success) {
           Auth.saveSession(result.data);
-          window.location.href = 'dashboard.html';
+          redirectAfterLogin(result.data);
         } else {
           UI.toast(result.message || 'Login Google gagal', 'error');
         }

@@ -10,8 +10,6 @@ function renderProfile() {
   document.getElementById('profileNama').textContent = session.nama || session.username;
   const roleLabels = { admin: 'Administrator', pembina: 'Pembina', bendahara: 'Bendahara', anggota: 'Anggota' };
   document.getElementById('profileJabatan').textContent = roleLabels[session.role] || session.jabatan || 'Anggota';
-  document.getElementById('profileNomor').textContent = session.nomorAnggota || '-';
-  document.getElementById('profileQobilah').textContent = session.qobilah || '-';
   document.getElementById('profileEmail').textContent = session.email || '-';
   document.getElementById('profileStatus').textContent = session.status === 'nonaktif' ? 'Nonaktif' : 'Aktif';
 
@@ -22,6 +20,38 @@ function renderProfile() {
   }
 }
 renderProfile();
+
+// ------------------------------------------------------------------
+// Data Anggota (nomor anggota & qobilah) - tidak tersimpan di sesi login,
+// diambil terpisah dari sheet 'anggota' via getMyAnggota (sama seperti dashboard)
+// ------------------------------------------------------------------
+async function loadMyAnggota() {
+  try {
+    const result = await Api.get('getMyAnggota');
+    if (!result.success) return; // akun tanpa data anggota (mis. admin) - biarkan tampil default "-"
+    const a = result.data;
+    const isPending = a.statusApproval === 'pending';
+
+    document.getElementById('profileNomor').textContent = isPending ? 'Menunggu ACC Admin' : (a.nomorAnggota || '-');
+    document.getElementById('profileStatus').textContent = isPending ? 'Menunggu ACC' : (a.status === 'aktif' ? 'Aktif' : 'Nonaktif');
+
+    if (isPending) {
+      document.getElementById('profileQobilah').textContent = 'Menunggu ACC Admin';
+    } else if (a.qobilahId) {
+      const qobilahRes = await Api.get('getQobilah');
+      if (qobilahRes.success) {
+        const q = qobilahRes.data.find(q => q.id === a.qobilahId);
+        document.getElementById('profileQobilah').textContent = q ? q.nama : '-';
+      }
+    }
+    if (a.fotoUrl) {
+      document.getElementById('avatarWrap').innerHTML = `<img src="${a.fotoUrl}" class="w-full h-full object-cover" />`;
+    }
+  } catch (err) {
+    // biarkan tampilan default "-" jika gagal memuat
+  }
+}
+loadMyAnggota();
 
 // ------------------------------------------------------------------
 // Foto profil

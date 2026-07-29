@@ -2,7 +2,7 @@
  * api.js - Fetch wrapper for myHW Google Apps Script backend
  * Ganti API_BASE_URL dengan URL Web App hasil deploy Google Apps Script Anda.
  */
-const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbw-nxLtY8etOFpcU6NiVx33RfzJRDaV7t84F5OnM4vdkuUGli3J8SnX2lgjzJzm3fuZ/exec';
+const API_BASE_URL = 'https://script.google.com/macros/s/GANTI_DENGAN_DEPLOYMENT_ID/exec';
 
 const Api = {
   async get(action, params = {}) {
@@ -36,8 +36,10 @@ const Api = {
     return result;
   },
 
-  // Convert a File object to base64 and upload via backend to Google Drive
-  async uploadFile(file, folder = 'myHW-uploads') {
+  // Convert a File object to base64 and upload via backend to Google Drive.
+  // `extra` bisa berisi { withPengesahan: true, kategoriPengesahan, uploadBy } untuk
+  // membuat Lembar Pengesahan (QR verifikasi keaslian) sekaligus saat upload.
+  async uploadFile(file, folder = 'myHW-uploads', extra = {}) {
     const base64 = await new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result.split(',')[1]);
@@ -49,6 +51,7 @@ const Api = {
       fileName: file.name,
       mimeType: file.type,
       folder,
+      ...extra,
     });
   },
 };

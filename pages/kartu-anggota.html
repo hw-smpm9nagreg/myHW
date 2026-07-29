@@ -12,10 +12,49 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/style.css" />
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+  /* Kartu KTA - background-nya adalah gambar template resmi (sudah termasuk
+     header hijau, kedua logo, dan teks footer). myHW cuma menempelkan data
+     yang berubah-ubah (nomor, foto, teks, QR) di atasnya lewat posisi persen,
+     jadi otomatis ikut mengecil/membesar mengikuti lebar kartu di layar mana pun.
+     Kartu yang sama ini juga yang dipakai untuk cetak (lihat @media print). */
+  .kta-card {
+    width: 100%;
+    max-width: 640px;
+    aspect-ratio: 1016 / 646;
+    border-radius: 18px;
+    overflow: hidden;
+    position: relative;
+    margin: 0 auto;
+    background-image: url('https://lh3.googleusercontent.com/d/1o_mOwDmBZxdJo6vRMnHnyW4dVXKQrUZH');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #0F766E;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    box-shadow: var(--shadow-card);
+  }
+  .kta-overlay { position: absolute; color: #1E293B; }
+  .kta-overlay.kta-nomor { font-size: 3.6vw; }
+  .kta-overlay.kta-table { font-size: 2.2vw; }
+  @media (min-width: 640px) {
+    .kta-overlay.kta-nomor { font-size: 23px; }
+    .kta-overlay.kta-table { font-size: 14px; }
+  }
+
+  @media print {
+    @page { size: landscape; margin: 8mm; }
+    body * { visibility: hidden; }
+    #kartuAnggotaCard, #kartuAnggotaCard * { visibility: visible; }
+    #kartuAnggotaCard { position: absolute; top: 0; left: 0; max-width: 900px !important; width: 210mm !important; box-shadow: none !important; }
+    #kartuAnggotaCard .kta-nomor { font-size: 26px !important; }
+    #kartuAnggotaCard .kta-table { font-size: 16px !important; }
+  }
+</style>
 </head>
 <body class="pb-10" style="background: var(--color-bg);">
 
-  <header class="gradient-primary px-4 pt-6 pb-8 flex items-center gap-3" style="border-bottom-left-radius: var(--radius-lg); border-bottom-right-radius: var(--radius-lg);">
+  <header class="print:hidden gradient-primary px-4 pt-6 pb-8 flex items-center gap-3" style="border-bottom-left-radius: var(--radius-lg); border-bottom-right-radius: var(--radius-lg);">
     <a href="../dashboard.html" class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center text-white">
       <i class="fa-solid fa-arrow-left"></i>
     </a>

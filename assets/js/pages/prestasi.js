@@ -15,7 +15,7 @@ async function loadData() {
   try {
     const [prestasiRes, anggotaRes] = await Promise.all([
       Api.get('getPrestasi'),
-      Api.get('getAnggota'),
+      Api.get('getAnggotaRingkas'),
     ]);
     allPrestasi = prestasiRes.success ? prestasiRes.data : [];
     allAnggota = anggotaRes.success ? anggotaRes.data : [];

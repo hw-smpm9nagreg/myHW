@@ -57,6 +57,7 @@ function renderList() {
         <button onclick="deleteSurat('${s.id}')" class="w-7 h-7 rounded-lg bg-red-50 text-[var(--color-danger)] flex items-center justify-center shrink-0"><i class="fa-solid fa-trash text-[10px]"></i></button>
       </div>
       ${s.fileUrl ? `<a href="${s.fileUrl}" target="_blank" class="inline-flex items-center gap-1 text-xs text-primary font-medium mt-3"><i class="fa-solid fa-file-pdf"></i> Lihat / Unduh File</a>` : '<p class="text-xs text-slate-300 mt-3"><i class="fa-solid fa-file-pdf mr-1"></i>Tanpa file</p>'}
+      ${s.kodeVerifikasi ? `<p class="text-[10px] text-emerald-600 font-semibold mt-1.5"><i class="fa-solid fa-circle-check mr-1"></i>Terverifikasi &middot; Kode: ${s.kodeVerifikasi}</p>` : ''}
     </div>
   `).join('');
 }
@@ -117,6 +118,7 @@ document.getElementById('suratForm').addEventListener('submit', async (e) => {
         if (pdfResult.success) {
           payload.fileUrl = pdfResult.data.url;
           payload.nomorSurat = pdfResult.data.nomorSurat;
+          payload.kodeVerifikasi = pdfResult.data.kodeVerifikasi;
         }
       }
     }
