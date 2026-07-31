@@ -3,6 +3,7 @@
  */
 Auth.requireAuth();
 
+const canWrite = Auth.hasRole('admin', 'pembina');
 let allKegiatan = [];
 
 const statusBadge = {
@@ -46,8 +47,10 @@ function renderList(data) {
           <p class="text-xs text-slate-500"><i class="fa-solid fa-location-dot mr-1"></i>${k.lokasi || '-'} &middot; ${k.jenis || '-'}</p>
         </div>
         <div class="flex flex-col gap-1.5 shrink-0">
+          ${canWrite ? `
           <button onclick="editKegiatan('${k.id}')" class="w-8 h-8 rounded-lg bg-teal-50 text-primary flex items-center justify-center"><i class="fa-solid fa-pen text-xs"></i></button>
           <button onclick="deleteKegiatan('${k.id}')" class="w-8 h-8 rounded-lg bg-red-50 text-[var(--color-danger)] flex items-center justify-center"><i class="fa-solid fa-trash text-xs"></i></button>
+          ` : ''}
         </div>
       </div>
       <div class="flex items-center gap-3 mt-3 pt-3 border-t border-slate-100 text-xs">
@@ -55,6 +58,15 @@ function renderList(data) {
         ${k.lpjUrl ? `<a href="${k.lpjUrl}" target="_blank" class="text-primary font-medium"><i class="fa-solid fa-file-invoice mr-1"></i>LPJ</a>` : '<span class="text-slate-300"><i class="fa-solid fa-file-invoice mr-1"></i>LPJ</span>'}
         <span class="ml-auto text-slate-400"><i class="fa-solid fa-users mr-1"></i>${k.pesertaCount || 0} peserta</span>
       </div>
+      ${canWrite ? `
+      <div class="flex gap-2 mt-3">
+        <a href="qr-scanner.html?kegiatanId=${encodeURIComponent(k.id)}" class="flex-1 py-2 rounded-[var(--radius-sm)] bg-teal-50 text-primary text-xs font-semibold text-center">
+          <i class="fa-solid fa-qrcode mr-1"></i>Scan QR Absensi
+        </a>
+        <button onclick="generateSertifikat('${k.id}', '${(k.nama || '').replace(/'/g, "\\'")}')" class="flex-1 py-2 rounded-[var(--radius-sm)] bg-teal-50 text-primary text-xs font-semibold">
+          <i class="fa-solid fa-certificate mr-1"></i>Generate E-Sertifikat
+        </button>
+      </div>` : ''}
     </div>
   `).join('');
 }
@@ -75,7 +87,8 @@ document.getElementById('filterJenis').addEventListener('change', applyFilters);
 // Form
 // ------------------------------------------------------------------
 const formModal = document.getElementById('formModal');
-document.getElementById('btnAdd').addEventListener('click', () => openForm());
+if (canWrite) document.getElementById('btnAdd').addEventListener('click', () => openForm());
+else document.getElementById('btnAdd').classList.add('hidden');
 document.getElementById('btnCloseForm').addEventListener('click', () => formModal.classList.add('hidden'));
 
 function openForm(data = null) {
@@ -162,5 +175,27 @@ document.getElementById('kegiatanForm').addEventListener('submit', async (e) => 
 
 window.editKegiatan = editKegiatan;
 window.deleteKegiatan = deleteKegiatan;
+
+async function generateSertifikat(kegiatanId, namaKegiatan) {
+  const ok = await UI.confirm(
+    `Sistem akan membuat E-Sertifikat untuk semua anggota berstatus "Hadir" di absensi kegiatan "${namaKegiatan}". Anggota yang sudah punya sertifikat untuk kegiatan ini akan dilewati.`,
+    'Generate E-Sertifikat?'
+  );
+  if (!ok) return;
+  UI.loading('Membuat sertifikat...');
+  try {
+    const result = await Api.post('generateSertifikat', { kegiatanId });
+    UI.closeLoading();
+    if (result.success) {
+      UI.toast(`${result.data.dibuat} sertifikat baru dibuat${result.data.dilewati ? `, ${result.data.dilewati} sudah ada sebelumnya` : ''}`);
+    } else {
+      UI.toast(result.message || 'Gagal membuat sertifikat', 'error');
+    }
+  } catch (err) {
+    UI.closeLoading();
+    UI.toast('Tidak dapat terhubung ke server', 'error');
+  }
+}
+window.generateSertifikat = generateSertifikat;
 
 loadKegiatan();

@@ -33,6 +33,7 @@ async function loadSettings() {
       document.getElementById('s_subjudulOrganisasi').value = s.subjudulOrganisasi || '';
       document.getElementById('s_alamatSekretariat').value = s.alamatSekretariat || '';
       document.getElementById('s_kontakOrganisasi').value = s.kontakOrganisasi || '';
+      document.getElementById('s_sertifikatTemplateId').value = s.sertifikatTemplateId || '';
     }
   } catch (err) {
     // biarkan form kosong jika gagal memuat - tidak menghalangi pengisian baru
@@ -46,6 +47,7 @@ document.getElementById('orgForm').addEventListener('submit', async (e) => {
     subjudulOrganisasi: document.getElementById('s_subjudulOrganisasi').value,
     alamatSekretariat: document.getElementById('s_alamatSekretariat').value,
     kontakOrganisasi: document.getElementById('s_kontakOrganisasi').value,
+    sertifikatTemplateId: document.getElementById('s_sertifikatTemplateId').value.trim(),
   };
   UI.loading('Menyimpan pengaturan...');
   try {

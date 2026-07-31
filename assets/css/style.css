@@ -29,6 +29,69 @@ body.dark {
   color: #E2E8F0;
 }
 
+/* ==========================================================================
+   MODE GELAP - override menyeluruh
+   Sebagian besar halaman memakai class utility Tailwind langsung (bg-white,
+   text-slate-800, dst) yang warnanya di-hardcode, bukan lewat CSS variable.
+   Supaya toggle Mode Gelap benar-benar terlihat di semua halaman tanpa harus
+   mengedit puluhan file HTML satu-satu, override-nya ditarget lewat selector
+   `body.dark <class-tailwind-yang-dipakai>` di sini.
+   ========================================================================== */
+body.dark .card-soft,
+body.dark .bg-white,
+body.dark .swal2-popup {
+  background: #14302B !important;
+  color: #E2E8F0;
+}
+body.dark .input-soft {
+  background: #0F241F;
+  color: #E2E8F0;
+}
+body.dark .input-soft:focus { background: #14302B; }
+body.dark .input-soft::placeholder { color: #64857D; }
+
+body.dark .bg-slate-50,
+body.dark .bg-slate-100 { background: #1B3833 !important; }
+
+body.dark .text-slate-800,
+body.dark .text-slate-700 { color: #F1F5F9 !important; }
+body.dark .text-slate-600,
+body.dark .text-slate-500 { color: #94A3B8 !important; }
+body.dark .text-slate-400,
+body.dark .text-slate-300 { color: #64857D !important; }
+
+body.dark .border-slate-100,
+body.dark .border-slate-200 { border-color: #21463F !important; }
+body.dark .divide-slate-100 > * + * { border-color: #21463F !important; }
+
+body.dark .bottom-nav { background: #14302B !important; }
+body.dark .bottom-nav .nav-item { color: #64857D; }
+
+body.dark .skeleton {
+  background: linear-gradient(90deg, #1B3833 25%, #21463F 37%, #1B3833 63%);
+  background-size: 400% 100%;
+}
+
+body.dark .shadow,
+body.dark .shadow-lg { box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.4) !important; }
+
+/* Chip warna pastel (ikon menu, badge status) sengaja tidak diubah drastis -
+   cukup dijaga agar tetap kontras di atas background gelap */
+body.dark [class*="bg-teal-50"],
+body.dark [class*="bg-emerald-50"],
+body.dark [class*="bg-sky-50"],
+body.dark [class*="bg-indigo-50"],
+body.dark [class*="bg-orange-50"],
+body.dark [class*="bg-amber-50"],
+body.dark [class*="bg-yellow-50"],
+body.dark [class*="bg-lime-50"],
+body.dark [class*="bg-rose-50"],
+body.dark [class*="bg-red-50"],
+body.dark [class*="bg-purple-50"],
+body.dark [class*="bg-slate-100"] {
+  filter: brightness(0.85) saturate(1.15);
+}
+
 /* ---------- Glassmorphism / Soft UI ---------- */
 .glass {
   background: rgba(255, 255, 255, 0.65);

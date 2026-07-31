@@ -28,6 +28,14 @@
 
   <main class="px-4 -mt-2">
     <div class="card-soft p-4 mt-4">
+      <label class="text-xs font-semibold text-slate-500 mb-1.5 block">Absensi untuk kegiatan</label>
+      <select id="kegiatanSelect" class="w-full text-sm rounded-[var(--radius-sm)] border border-slate-200 px-3 py-2.5 mb-1">
+        <option value="">- Tanpa Kegiatan (Latihan Rutin) -</option>
+      </select>
+      <p id="kegiatanLockedInfo" class="hidden text-xs text-primary font-medium mt-1"><i class="fa-solid fa-lock mr-1"></i>Kegiatan dikunci dari halaman Kegiatan</p>
+    </div>
+
+    <div class="card-soft p-4 mt-4">
       <div id="reader" class="rounded-[var(--radius-md)] overflow-hidden"></div>
     </div>
 
@@ -48,6 +56,35 @@
   <script>
     Auth.requireAuth();
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const presetKegiatanId = urlParams.get('kegiatanId') || '';
+    const kegiatanSelect = document.getElementById('kegiatanSelect');
+
+    async function loadKegiatanOptions() {
+      try {
+        const result = await Api.get('getKegiatan');
+        const list = result.success ? result.data : [];
+        list
+          .sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal))
+          .forEach(k => {
+            const opt = document.createElement('option');
+            opt.value = k.id;
+            opt.textContent = `${k.nama} - ${UI.formatDate(k.tanggal)}`;
+            kegiatanSelect.appendChild(opt);
+          });
+        if (presetKegiatanId) {
+          kegiatanSelect.value = presetKegiatanId;
+          if (kegiatanSelect.value === presetKegiatanId) {
+            kegiatanSelect.disabled = true;
+            document.getElementById('kegiatanLockedInfo').classList.remove('hidden');
+          }
+        }
+      } catch (err) {
+        // Gagal memuat daftar kegiatan tidak menghalangi absensi "Latihan Rutin"
+      }
+    }
+    loadKegiatanOptions();
+
     let scanning = true;
     const scanner = new Html5Qrcode('reader');
 
@@ -61,7 +98,7 @@
 
         UI.loading('Memproses absensi...');
         try {
-          const result = await Api.post('absensiQr', { qrCode: decodedText });
+          const result = await Api.post('absensiQr', { qrCode: decodedText, kegiatanId: kegiatanSelect.value });
           UI.closeLoading();
           if (result.success) {
             document.getElementById('resultCard').classList.remove('hidden');

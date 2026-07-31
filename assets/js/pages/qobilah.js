@@ -1,7 +1,9 @@
 /**
  * pages/qobilah.js - Modul Qobilah
  */
-Auth.requireRole('admin', 'pembina');
+Auth.requireRole('admin', 'pembina', 'bendahara', 'anggota');
+
+const canWrite = Auth.hasRole('admin', 'pembina');
 
 let allQobilah = [];
 let allAnggota = [];
@@ -12,7 +14,7 @@ async function loadQobilah() {
   try {
     const [qobilahRes, anggotaRes] = await Promise.all([
       Api.get('getQobilah'),
-      Api.get('getAnggota'),
+      Api.get('getAnggotaRingkas'),
     ]);
     allQobilah = qobilahRes.success ? qobilahRes.data : [];
     allAnggota = anggotaRes.success ? anggotaRes.data : [];
@@ -40,8 +42,9 @@ function renderList(data) {
         <p class="text-xs text-slate-500 truncate">${q.golongan || '-'} &middot; Pembina: ${q.pembina || '-'}</p>
         <p class="text-xs text-primary font-semibold mt-0.5">${memberCount(q.id)} anggota</p>
       </div>
+      ${canWrite ? `
       <button onclick="editQobilah('${q.id}')" class="w-9 h-9 rounded-lg bg-teal-50 text-primary flex items-center justify-center shrink-0"><i class="fa-solid fa-pen text-xs"></i></button>
-      <button onclick="deleteQobilah('${q.id}')" class="w-9 h-9 rounded-lg bg-red-50 text-[var(--color-danger)] flex items-center justify-center shrink-0"><i class="fa-solid fa-trash text-xs"></i></button>
+      <button onclick="deleteQobilah('${q.id}')" class="w-9 h-9 rounded-lg bg-red-50 text-[var(--color-danger)] flex items-center justify-center shrink-0"><i class="fa-solid fa-trash text-xs"></i></button>` : ''}
     </div>
   `).join('');
 }
@@ -55,7 +58,8 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
 // Form
 // ------------------------------------------------------------------
 const formModal = document.getElementById('formModal');
-document.getElementById('btnAdd').addEventListener('click', () => openForm());
+if (canWrite) document.getElementById('btnAdd').addEventListener('click', () => openForm());
+else document.getElementById('btnAdd').classList.add('hidden');
 document.getElementById('btnCloseForm').addEventListener('click', () => formModal.classList.add('hidden'));
 
 function openForm(data = null) {
